@@ -3,25 +3,25 @@
   "version": "0.0.1",
   "type": "module",
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/chriscalo/vite-ssr-vue"
+    "type": "git",
+    "url": "git+https://github.com/chriscalo/vite-ssr-vue"
   },
+  "workspaces": [
+    "common",
+    "server",
+    "ui"
+  ],
   "scripts": {
-    "dev": "node server",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build --ssrManifest --outDir dist/client",
-    "build:server": "vite build --ssr entry-server.js --outDir dist/server",
-    "preview": "cross-env NODE_ENV=production node server"
+    "dev": "nodemon -e js,mjs,cjs,json,vue,html,css,scss --watch . --ignore ui/dist --inspect server/index.js",
+    "start": "node server/index.js",
+    "build": "TODO",
+    "preview": "TODO"
   },
   "dependencies": {
-    "compression": "^1.7.4",
-    "express": "^4.18.2",
-    "sirv": "^2.0.4",
-    "vue": "^3.3.13"
+    "~": "file:./"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.5.2",
-    "cross-env": "^7.0.3",
-    "vite": "^5.0.10"
+    "node": "^20.11.1",
+    "nodemon": "^3.1.0"
   }
 }

@@ -1,0 +1,8 @@
+{
+  "name": "common",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "caller": "^1.1.0"
+  }
+}
