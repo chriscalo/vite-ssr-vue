@@ -1,4 +1,3 @@
-import { spawnSync } from "node:child_process";
 import { cjsify, file } from "common";
 import express from "express";
 import compression from "compression";
@@ -15,12 +14,14 @@ server.use(compression());
 
 // serve Vite's static assets
 server.use(async function (req, res, next) {
+  console.log("staticHandler", req.originalUrl);
   const { staticHandler } = await viteHandlers;
   staticHandler(req, res, next);
 });
 
 // serve Vites's middlewares
 server.use(async function (req, res, next) {
+  console.log("ssrHandler", req.originalUrl);
   const { ssrHandler } = await viteHandlers;
   const { locals } = res;
   locals.req = req;
@@ -30,15 +31,11 @@ server.use(async function (req, res, next) {
 
 async function startVite() {
   if (DEVELOPMENT) {
-    // const { build } = await import("vite");
+    // Vite's `build()` function doesn't work, so use the CLI instead
+    const { spawnSync } = await import("node:child_process");
     spawnSync("npm", ["run", "build"], {
       cwd: __dirname,
     });
-    // await build({
-    //   root: __dirname,
-    //   mode: "production",
-    // });
-    console.log("build complete");
   }
   
   return {
@@ -48,14 +45,24 @@ async function startVite() {
 }
 
 function createStaticHandler() {
+  // See https://expressjs.com/en/starter/static-files.html
+  const options = {
+    // IMPORTANT: Use `index: false` to disable serving `index.html` pages
+    // when a directory is requested because we want all HTML requests to be
+    // server-rendered.
+    index: false,
+  };
+  
   const staticPath = `${__dirname}/dist/client/`;
-  return express.static(staticPath);
+  return express.static(staticPath, options);
 }
 
 function createSSRHandler() {
-  const templateHtml = file("./dist/client/index.html");
+  // FIXME: look up HTML file corresponding to URL path?
+  const templateHtml = file("./dist/client/pages/index.html");
   const ssrManifest = file("./dist/client/.vite/ssr-manifest.json");
   
+  // FIXME: use SSR handler only if the URL path matches an SSR HTML file
   return async function ssrHandler(req, res, next) {
     try {
       const url = req.originalUrl;

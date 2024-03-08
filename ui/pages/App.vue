@@ -16,6 +16,8 @@
   <HelloWorld msg="Vite + Vue" />
 </template>
 
+<style src="./style.css"></style>
+
 <style scoped>
   .logo {
     height: 6em;

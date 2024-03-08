@@ -9,6 +9,11 @@
   </head>
   <body>
     <div id="app"><!--app-html--></div>
-    <script type="module" src="/entry-client.js"></script>
+    <script type="module">
+      import { createApp } from "./main.js";
+      
+      const { app } = createApp();
+      app.mount("#app");
+    </script>
   </body>
 </html>
