@@ -38,7 +38,7 @@ if (!isProduction) {
 app.use("*", async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, "");
-
+    
     let template;
     let render;
     if (!isProduction) {
@@ -50,13 +50,13 @@ app.use("*", async (req, res) => {
       template = templateHtml;
       render = (await import("./dist/server/entry-server.js")).render;
     }
-
+    
     const rendered = await render(url, ssrManifest);
-
+    
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")
       .replace(`<!--app-html-->`, rendered.html ?? "");
-
+    
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (error) {
     vite?.ssrFixStacktrace(error);
