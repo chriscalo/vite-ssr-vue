@@ -12,10 +12,22 @@
     "ui"
   ],
   "scripts": {
-    "dev": "nodemon -e js,mjs,cjs,json,vue,html,css,scss --watch . --ignore ui/dist --inspect server/index.js",
+    "dev": "nodemon --inspect server/index.js",
     "start": "node server/index.js",
     "build": "TODO",
     "preview": "TODO"
+  },
+  "nodemonConfig": {
+    "verbose": false,
+    "watch": ".",
+    "ext": "js,mjs,cjs,json,vue,html,css,scss",
+    "ignore": [
+      "ui/dist",
+      "ui/vite.config.js.timestamp-*.mjs"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    }
   },
   "dependencies": {
     "~": "file:./"
