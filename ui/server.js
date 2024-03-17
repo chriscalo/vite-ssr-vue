@@ -1,33 +1,17 @@
-import { cjsify, file } from "common";
+import path from "node:path";
 import express from "express";
 import compression from "compression";
-
+import { cjsify, file } from "common";
 
 const { __dirname } = cjsify(import.meta);
 const DEVELOPMENT = (process.env.NODE_ENV !== "production");
 
 const server = express();
 export default server;
-const viteHandlers = startVite();
 
 server.use(compression());
 
-// serve Vite's static assets
-server.use(async function (req, res, next) {
-  console.log("staticHandler", req.originalUrl);
-  const { staticHandler } = await viteHandlers;
-  staticHandler(req, res, next);
-});
-
-// serve Vites's middlewares
-server.use(async function (req, res, next) {
-  console.log("ssrHandler", req.originalUrl);
-  const { ssrHandler } = await viteHandlers;
-  const { locals } = res;
-  locals.req = req;
-  locals.res = res;
-  ssrHandler(req, res, next, locals);
-});
+const viteReady = startVite();
 
 async function startVite() {
   if (DEVELOPMENT) {
@@ -35,6 +19,7 @@ async function startVite() {
     const { spawnSync } = await import("node:child_process");
     spawnSync("npm", ["run", "build"], {
       cwd: __dirname,
+      stdio: "inherit",
     });
   }
   
@@ -58,27 +43,35 @@ function createStaticHandler() {
 }
 
 function createSSRHandler() {
-  // FIXME: look up HTML file corresponding to URL path?
-  const templateHtml = file("./dist/client/pages/index.html");
-  const ssrManifest = file("./dist/client/.vite/ssr-manifest.json");
-  
-  // FIXME: use SSR handler only if the URL path matches an SSR HTML file
-  return async function ssrHandler(req, res, next) {
+  return async function (req, res, next) {
     try {
-      const url = req.originalUrl;
+      // TODO: use URL path to find correct server and client assets
+      const url = new URL(req.originalUrl, "http://localhost");
+      if (url.pathname !== "/") {
+        return next();
+      }
       
-      // import the server entry point on each request
-      const { render } = await import("./dist/server/entry-server.js");
-      const rendered = await render(url, ssrManifest);
+      const htmlPath = path.resolve(__dirname, "dist/client/index.html");
+      let html = file(htmlPath);
       
-      const html = templateHtml
-        .replace(`<!--app-head-->`, rendered.head ?? "")
-        .replace(`<!--app-html-->`, rendered.html ?? "");
+      const { render } = await import(`./dist/server/index.server.js`);
+      const output = await render(req);
+      console.dir(output);
       
-      res.status(200).set({ "Content-Type": "text/html" }).send(html);
+      html = html.replace(`<!--slot-body-->`, output.html);
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
     } catch (error) {
-      console.error(error.stack);
-      res.status(500).end(error.stack);
+      next(error);
     }
   };
 }
+
+server.use(async function (req, res, next) {
+  const { staticHandler } = await viteReady;
+  staticHandler(req, res, next);
+});
+
+server.use("*", async function (req, res, next) {
+  const { ssrHandler } = await viteReady;
+  ssrHandler(req, res, next);
+});
