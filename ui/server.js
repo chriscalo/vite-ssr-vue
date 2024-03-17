@@ -56,7 +56,6 @@ function createSSRHandler() {
       
       const { render } = await import(`./dist/server/index.server.js`);
       const output = await render(req);
-      console.dir(output);
       
       html = html.replace(`<!--slot-body-->`, output.html);
       res.status(200).set({ "Content-Type": "text/html" }).end(html);
