@@ -11,6 +11,13 @@ async function listen(app, port) {
   });
 }
 
+class RelativeURL extends URL {
+  constructor(input, base = "http://unspecified") {
+    super(input, base);
+  }
+}
+
 export {
   listen,
+  RelativeURL,
 };

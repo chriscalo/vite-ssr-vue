@@ -1,7 +1,7 @@
 import path from "node:path";
 import express from "express";
 import compression from "compression";
-import { cjsify, file } from "common";
+import { cjsify, file, RelativeURL } from "common";
 
 const { __dirname } = cjsify(import.meta);
 const DEVELOPMENT = (process.env.NODE_ENV !== "production");
@@ -46,7 +46,7 @@ function createSSRHandler() {
   return async function (req, res, next) {
     try {
       // TODO: use URL path to find correct server and client assets
-      const url = new URL(req.originalUrl, "http://localhost");
+      const url = new RelativeURL(req.originalUrl);
       if (url.pathname !== "/") {
         return next();
       }
