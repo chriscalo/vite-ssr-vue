@@ -1,0 +1,13 @@
+{
+  "verbose": true,
+  "inspect": true,
+  "watch": ".",
+  "ext": "js,mjs,cjs,json,vue,html,css,scss",
+  "ignore": [
+    "ui/dist",
+    "ui/vite.config.js.timestamp-*.mjs"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
