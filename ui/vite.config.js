@@ -6,7 +6,8 @@ import { cjsify, path as makePath } from "common";
 
 const { __dirname } = cjsify(import.meta);
 const input = htmlPageEntryPoints();
-console.debug(input);
+printHtmlPageInfo(input);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   root: makePath`${__dirname}/pages`,
@@ -32,4 +33,12 @@ function htmlPageEntryPoints() {
     return [ entryPointName, entryPointPath ];
   });
   return Object.fromEntries(entries);
+}
+
+function printHtmlPageInfo(info) {
+  const entries = Object.entries(info);
+  console.debug(`HTML pages found: ${entries.length}`);
+  for (const [name, path] of entries) {
+    console.debug(`- ${name}: ${path}`);
+  }
 }
