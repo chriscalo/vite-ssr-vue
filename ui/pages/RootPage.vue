@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, useSSRContext } from "vue";
+  import { ref } from "vue";
   const count = ref(0);
 </script>
 
