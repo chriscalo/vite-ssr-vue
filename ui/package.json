@@ -8,9 +8,10 @@
     "preview": "cross-env NODE_ENV=production node server"
   },
   "dependencies": {
+    "!": "file:./",
     "common": "file:../common",
     "compression": "^1.7.4",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "globby": "^14.0.1",
     "vue": "^3.3.13"
   },

@@ -5,7 +5,7 @@
   "dependencies": {
     "client-sessions": "^0.8.0",
     "common": "file:../common",
-    "express": "^4.18.3",
+    "express": "^4.19.2",
     "ui": "file:../ui"
   }
 }
